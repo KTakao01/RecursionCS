@@ -1,7 +1,3 @@
-<!--
-   問題文
-   以下のエディターにHTMLで、target-containerの中に2つのdivをJavaScriptを使って作成してください。1つ目のdivにはsportというh2タグとtennis、baseballというpタグが含まれています。2つ目のdivにはanimalというh2タグとdog、catというpタグが含まれています。見本を参照してください。
--->
 <div>
    <div id="target-container">
 

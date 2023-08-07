@@ -1,7 +1,3 @@
-<!--
-   問題文
-   以下のエディターにHTMLが書かれていますが、表記に誤りがあります。特定のIDを持つ要素を取得し、要素を正しい情報で上書きしてみましょう。
--->
 <div>
    <h1>Successful startup companies in Bay Area</h1>
    <div>

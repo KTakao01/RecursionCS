@@ -1,37 +1,3 @@
-<!-- 
-    問題文
-    animal-containerの中にdogの画像と説明を挿入し、ブラウザに表示してみましょう。文字列を受け取り、動物に応じてurlを返す、animalImgUrlという関数を作成してください。
-    
-    url
-    dog: https://cdn.pixabay.com/photo/2017/09/25/13/12/dog-2785074__340.jpg
-    cat: https://cdn.pixabay.com/photo/2014/03/29/09/17/cat-300572__340.jpg
-    bird: https://cdn.pixabay.com/photo/2017/02/07/16/47/kingfisher-2046453__340.jpg
-    the other animals: https://cdn.pixabay.com/photo/2014/04/05/11/20/forest-315184__340.jpg
--->
-<head>
-    <!-- Bootstrapの読み込み -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-</head>
-
-<div>
-    <div id="animal-container" class="row">
-    <!-- ここにdogの画像と説明を追加します。 -->
-    </div>
-</div>
-
-.animalImg {
-    width: 100px;
-    height: 100px;
-    padding: 1em;
-}
-  
-.animalDiv {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    width: 25%;
-    margin-top:2em;
-}
 
 // ここからJavaScriptを記述してください。
 // 関数名: animalImgUrl
