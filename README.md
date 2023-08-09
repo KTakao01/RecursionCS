@@ -1,5 +1,5 @@
-# RecursionCS
-[RecursionCS](https://recursionist.io/)の学習記録
+# 本レポジトリ
+[Recursion](https://recursionist.io/)の学習記録
 
 # Recursionとは
 元Facebookエンジニアがカリキュラムを構築。
