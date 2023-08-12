@@ -22,7 +22,7 @@ class EmotionObject{
         }
         return res;
     }
-    //コンテンツのベース作成（静的コンテンツ）
+    //コンテンツのベース作成
     getHtmlContainerString(){
     let string = `
             <div id="${this.emotion}" style="background:${this.color}">
@@ -133,30 +133,32 @@ class helperFunction {
     //動的カテゴリの作成
     static generateCategoryElements(emotionObjectList) {
         let container = document.createElement("div");
-        container.classList.add("d-flex","container","flex-wrap");
+        container.classList.add("d-flex","container","flex-wrap","justify-content-center");
 
         emotionObjectList = helperFunction.shuffledArray(emotionObjectList);
         
         for(let i=0;i<emotionObjectList.length;i++){ 
             
-            let emotionObject = emotionObjectList[i]
-
+            let emotionObject = emotionObjectList[i];
+            let content = document.createElement("div");
+            content.classList.add("col-3" ,"m-3", "text-center");
+            content.style.background = `${emotionObject.color}`;
             //emotionObjectクラスにアクセスしつつ動的categoryを作成
-            container.innerHTML = `
-            <div class="col-3 m-3 text-center style="background:${emotionObject.color}">
+            content.innerHTML = ` 
                 <a href=#${emotionObject.emotion}></a>
                 <h3 class="text-white">${emotionObject.emotion}</h3>
                 <h1>${emotionObject.emoji}</h1>
                 <p class="text-white">${emotionObject.description}</p>
-            </div>
             `
+
+            container.append(content);
         }
 
         target.append(container);
         return target;
     }
 
-    //動的コンテンツの作成
+    //emotionコンテンツの複製
     static generateOnomatopoeiaElements(emotionObjectList){
         let container = document.createElement("div")
         let htmlString = "";
