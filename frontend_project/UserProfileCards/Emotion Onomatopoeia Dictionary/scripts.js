@@ -145,10 +145,11 @@ class helperFunction {
             content.style.background = `${emotionObject.color}`;
             //emotionObjectクラスにアクセスしつつ動的categoryを作成
             content.innerHTML = ` 
-                <a href=#${emotionObject.emotion}></a>
+                <a href=#${emotionObject.emotion}>
                 <h3 class="text-white">${emotionObject.emotion}</h3>
                 <h1>${emotionObject.emoji}</h1>
                 <p class="text-white">${emotionObject.description}</p>
+                </a>
             `
 
             container.append(content);
