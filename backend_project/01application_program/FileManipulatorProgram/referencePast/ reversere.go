@@ -1,5 +1,3 @@
-分割するだけ
-
 package main
 
 import (
@@ -13,6 +11,7 @@ func main() {
 		fmt.Println("Usage: go run file_manipulator.go reverse <inputfile> <outputfile>")
 		return
 	}
+	//リファクタリング。分割するだけ
 
 	command := os.Args[1]
 	inputFile := os.Args[2]
