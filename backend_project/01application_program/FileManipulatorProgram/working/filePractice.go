@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 //main,reverseへの切り分け
@@ -44,7 +45,16 @@ func main() {
 
 	command := os.Args[1]
 	inputFile := os.Args[2]
-	outputFile := os.Args[3]
+	var outputFile, duplicateNumber string
+
+	if command == "copy" || command == "reverse" {
+		outputFile = os.Args[3]
+	}
+
+	if command == "duplicate-contents" {
+		duplicateNumber = os.Args[3]
+	}
+
 	//モックのための便宜的な具体型の導入
 	ops := &defaultFileOperations{}
 
@@ -60,12 +70,21 @@ func main() {
 		if err != nil {
 			fmt.Println("Error processing copy:", err)
 		}
+	case "duplicate-contents":
+		loopNumber, err := strconv.Atoi(duplicateNumber)
+		if err != nil {
+			fmt.Println("error to change from string to int ", err)
+		}
+		err = duplicateContents(inputFile, loopNumber, ops, ops)
+		if err != nil {
+			fmt.Println("Error processing duplicate-contents:", err)
+		}
 
 	}
 
 }
 
-// 個別コマンド（ここではreverse)の実装
+// 個別コマンドの実装
 // 入力、出力ファイルの指定が必要
 func reverse(inputFile, outputFile string, reader ReadFile, writer WriteFile) error {
 	// ファイルを読み込む
@@ -93,6 +112,25 @@ func copy(inputFile, outputFile string, reader ReadFile, writer WriteFile) error
 	err = writer.WriteFile(outputFile, content, 0644)
 	if err != nil {
 		return fmt.Errorf("Error writing to file: %w", err)
+	}
+	return nil
+}
+
+func duplicateContents(inputFile string, loopNumber int, reader ReadFile, writer WriteFile) error {
+	content, err := reader.ReadFile(inputFile)
+	if err != nil {
+		return fmt.Errorf("Error reading content: %w", err)
+	}
+
+	sContent := string(content)
+	var copyContent string
+	for i := 0; i < loopNumber; i++ {
+		copyContent += sContent
+		dContent := []byte(copyContent)
+		err = writer.WriteFile(inputFile, dContent, 0644)
+		if err != nil {
+			return fmt.Errorf("Error writing to file: %w", err)
+		}
 	}
 	return nil
 }
