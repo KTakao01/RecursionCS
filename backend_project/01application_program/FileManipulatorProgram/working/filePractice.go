@@ -121,15 +121,17 @@ func duplicateContents(inputFile string, loopNumber int, reader ReadFile, writer
 	if err != nil {
 		return fmt.Errorf("Error reading content: %w", err)
 	}
-	var duplicatedContent []byte
+	sContent := string(content)
+	var copyContent string
+	var dContent []byte
 	for i := 0; i < loopNumber; i++ {
-		duplicatedContent = append(duplicatedContent, content...)
+		copyContent += sContent
+		dContent = []byte(copyContent)
 	}
-	err = writer.WriteFile(inputFile, duplicatedContent, 0644)
+	err = writer.WriteFile(inputFile, dContent, 0644)
 	if err != nil {
 		return fmt.Errorf("Error writing to file: %w", err)
 	}
-
 	return nil
 }
 
