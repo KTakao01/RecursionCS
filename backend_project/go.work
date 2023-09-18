@@ -1,0 +1,6 @@
+go 1.20
+
+use (
+	./backend_project/01application_program/MarkdownToHTMLConverter
+    ./backend_project/01application_program/FileManipulatorProgram/working
+)
