@@ -1,0 +1,257 @@
+// https://recursionist.io/dashboard/course/3/lesson/475
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type BinaryTree struct {
+	data  int
+	left  *BinaryTree
+	right *BinaryTree
+}
+
+func NewBinaryTree(data int, left *BinaryTree, right *BinaryTree) *BinaryTree {
+	return &BinaryTree{data, left, right}
+}
+
+func (bt *BinaryTree) printInOrder() {
+	bt.inOrderWalk(bt)
+	fmt.Println()
+}
+
+func (bt *BinaryTree) inOrderWalk(tRoot *BinaryTree) {
+	if tRoot != nil {
+		bt.inOrderWalk(tRoot.left)
+		fmt.Printf("%d ", tRoot.data)
+		bt.inOrderWalk(tRoot.right)
+	}
+}
+
+type BinarySearchTree struct {
+	root *BinaryTree
+}
+
+func NewBinarySearchTree(arr []int) *BinarySearchTree {
+	sort.Ints(arr)
+	return &BinarySearchTree{sortedBSTHelper(arr, 0, len(arr)-1)}
+}
+
+func sortedBSTHelper(arr []int, start int, end int) *BinaryTree {
+	if start == end {
+		return NewBinaryTree(arr[start], nil, nil)
+	}
+	mid := (start + end) / 2
+	var left *BinaryTree
+	if start < mid {
+		left = sortedBSTHelper(arr, start, mid-1)
+	}
+	var right *BinaryTree
+	if end > mid {
+		right = sortedBSTHelper(arr, mid+1, end)
+	}
+	return NewBinaryTree(arr[mid], left, right)
+}
+
+func (bst *BinarySearchTree) keyExist(key int) bool {
+	iterator := bst.root
+	for iterator != nil {
+		if iterator.data == key {
+			return true
+		} else if iterator.data > key {
+			iterator = iterator.left
+		} else {
+			iterator = iterator.right
+		}
+	}
+	return false
+}
+
+func (bst *BinarySearchTree) search(key int) *BinaryTree {
+	iterator := bst.root
+	for iterator != nil {
+		if iterator.data == key {
+			return iterator
+		}
+		if iterator.data > key {
+			iterator = iterator.left
+		} else {
+			iterator = iterator.right
+		}
+	}
+	return nil
+}
+
+func (bst *BinarySearchTree) insert(data int) *BinaryTree {
+	iterator := bst.root
+	for iterator != nil {
+		if iterator.data > data && iterator.left == nil {
+			iterator.left = NewBinaryTree(data, nil, nil)
+		} else if iterator.data < data && iterator.right == nil {
+			iterator.right = NewBinaryTree(data, nil, nil)
+		}
+		if iterator.data > data {
+			iterator = iterator.left
+		} else {
+			iterator = iterator.right
+		}
+	}
+	return bst.root
+}
+
+// この関数は、nodeParentの子ノードであるnodeをtargetに置き換えます。
+// nodeParentがnullの場合、つまりrootノードを移植する場合は、root自体をtargetに置き換えます。
+func (bst *BinarySearchTree) transplant(nodeParent *BinaryTree, node *BinaryTree, target *BinaryTree) {
+	// 根ノードを移植する場合
+	if nodeParent == nil {
+		bst.root = target
+	} else if nodeParent.left == node {
+		// 左の子ノードを移植する場合
+		nodeParent.left = target
+	} else {
+		// 右の子ノードを移植する場合
+		nodeParent.right = target
+	}
+}
+
+// この関数は、BSTから特定のnodeを削除します。
+// 削除するノードによって4つの異なるケースを処理します。
+func (bst *BinarySearchTree) deleteNode(key int) {
+	// ツリーが空の場合、何もしない
+	if bst.root == nil {
+		return
+	}
+	node := bst.search(key)
+	// ノードが存在しない場合、何もしない
+	if node == nil {
+		return
+	}
+	// 削除するノードの親ノードを見つけます。
+	parent := bst.findParent(node)
+	// case1: ノードNが葉ノード
+	if node.left == nil && node.right == nil {
+		// 親ノードからnodeへの参照をnullに変更してnodeを削除します。
+		if parent.left.data == key {
+			parent.left = nil
+		} else if parent.right.data == key { // ノードが親の右の子の場合、右の子をnullにする
+
+			parent.right = nil
+		}
+	} else if node.left == nil { // case2: ノードNの左が空
+		// 左の子がいない場合、親の参照をNの右の子に変更します。
+		bst.transplant(parent, node, node.right)
+	} else if node.right == nil { // case3: ノードNの右が空
+		// 右の子がいない場合、親の参照をNの左の子に変更します。
+		bst.transplant(parent, node, node.left)
+	} else {
+		// case4: 2つの子を持っている場合
+		// Nが2つの子ノードを持っている場合、Nを削除すると代わりに入るべきノードはその後続ノードSになります。
+		// Nの後続ノードSを探す
+		successor := bst.findSuccessor(node)
+		// Sの親ノードSPを探す
+		successorParent := bst.findParent(successor)
+		// 後続ノードSがすぐ右側にいない場合:
+		// この場合、後続ノードSの親も変更しなければいけません。
+
+		if successor != node.right {
+			// 後続ノードSをSの右部分木で移植します。Sをアップデートします。
+			/*後続ノードSはノードの右部分木でない場合、後続ノードSの親SPの左部分木。
+			  後続ノードが最左端なので右部分木しかない。
+			  親SPよりも小さいがより大きい値が後続ノードの部分木のノード。
+			  つまり後続ノードの親にも後続ノードにも対象ノードにも右部分木がある。
+			  対象ノードに移動する後続ノードの右部分木をどこに移植するか？
+			  Sの位置。後続ノードの親の右部分木に移動させるのは無理。Sの右部分木は後続ノードの親の左部分木なので。
+			  移植はその値より大きければいい。小さいと左部分木との整合とれないかも。
+			*/
+			bst.transplant(successorParent, successor, successor.right)
+			successor.right = node.right
+			// Sの右側はノードNの右側になっている必要があります。
+
+		}
+
+		// 後続ノードSがすぐ右側にいる場合:
+		// この場合、ノードNが後続ノードSの親になっているため、ノードNを後続ノードSで移植します。
+		bst.transplant(parent, node, successor)
+		// Sの左部分木をノードNの左部分木にします。
+		successor.left = node.left
+		/*この部分について後続ノードに右部分木がある場合とそうでない場合も、後続ノードは部分木において最左端であることから
+		  後続ノードには右部分木しかない。移植後は空の左部分木にnode.leftの左を移植する意味でsuccessor.left = node.leftとしている*/
+
+	}
+}
+
+func (bst *BinarySearchTree) findParent(node *BinaryTree) *BinaryTree {
+	iterator := bst.root
+	var parent *BinaryTree = nil
+	for iterator != nil && iterator != node {
+		parent = iterator
+		if iterator.data > node.data {
+			iterator = iterator.left
+		} else {
+			iterator = iterator.right
+		}
+	}
+	return parent
+}
+
+func (bst *BinarySearchTree) findSuccessor(node *BinaryTree) *BinaryTree {
+	targetNode := node
+	//ターゲットノードが存在しない場合、後続ノードも存在しない
+	if targetNode == nil {
+		return nil
+	}
+	//右部分木が存在する場合、後続ノードは右部分木の最小値（最左端）
+	if targetNode.right != nil {
+		return bst.minimumNode(targetNode.right)
+	}
+	//右部分木が存在しない場合、後続ノードは祖先のノードのいずれか。
+	var successor *BinaryTree = nil
+	iterator := bst.root
+	for iterator != nil {
+		//探索は根ノードから対象ノードまで。
+		if targetNode.data == iterator.data {
+			return successor
+		}
+		//後続ノードは対象ノードより大きい最小の値。より小さい値をsuccessorとして更新する。
+		if targetNode.data < iterator.data && (successor == nil || iterator.data < successor.data) {
+			successor = iterator
+		}
+
+		if targetNode.data < iterator.data {
+			iterator = iterator.left
+		} else {
+			iterator = iterator.right
+		}
+	}
+	return successor
+
+}
+
+func (bst *BinarySearchTree) minimumNode(node *BinaryTree) *BinaryTree {
+	iterator := node
+	for iterator != nil && iterator.left != nil {
+		iterator = iterator.left
+	}
+	return iterator
+}
+
+func (bst *BinarySearchTree) printSorted() {
+	bst.root.printInOrder()
+}
+
+func main() {
+	values := []int{4, 43, 36, 46, 32, 7, 97, 95, 34, 8, 96, 35, 85, 1010, 232}
+	balancedBST := NewBinarySearchTree(values)
+	balancedBST.printSorted()
+	balancedBST.deleteNode(43)
+	balancedBST.printSorted()
+	balancedBST.deleteNode(7)
+	balancedBST.printSorted()
+	balancedBST.deleteNode(4)
+	balancedBST.printSorted()
+	balancedBST.deleteNode(1010)
+	balancedBST.printSorted()
+	balancedBST.deleteNode(0)
+	balancedBST.printSorted()
+}
