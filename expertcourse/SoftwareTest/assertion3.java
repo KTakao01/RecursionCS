@@ -1,3 +1,4 @@
+//https://recursionist.io/dashboard/problems/525
 class Assertion {
     public static void run(boolean b) throws Exception {
         if (!b) throw new Exception("Assertion Error");
