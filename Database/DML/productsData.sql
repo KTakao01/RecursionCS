@@ -1,0 +1,1 @@
+SELECT products.* FROM products;
